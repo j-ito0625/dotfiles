@@ -1,47 +1,42 @@
-{{- /* ▼▼▼ 変数初期化（デフォルト：Linux/SSH - 紫） ▼▼▼ */ -}}
-{{- $main_bg := "#bb9af7" -}}
-{{- $os_icon := "" -}}
+{{- /* ▼▼▼ 設定ロジック ▼▼▼ */ -}}
+{{- $main_bg := "#bb9af7" -}}   {{- /* デフォルト(Linux): 紫 */ -}}
+{{- $os_label := "LINUX" -}}    {{- /* デフォルト文字 */ -}}
 
-{{- /* ▼▼▼ OS判定ロジック ▼▼▼ */ -}}
 {{- if eq .chezmoi.os "windows" -}}
-    {{- /* Windowsの場合：青 */ -}}
-    {{- $main_bg = "#769ff0" -}}
-    {{- $os_icon = "" -}}
-{{- /* 以下の行を修正：osrelease に microsoft または wsl2 が含まれていたら */ -}}
+    {{- $main_bg = "#769ff0" -}} {{- /* Windows: 青 */ -}}
+    {{- $os_label = "WIN" -}}
 {{- else if or (contains "microsoft" .chezmoi.kernel.osrelease) (contains "wsl2" .chezmoi.kernel.osrelease) -}}
-    {{- /* WSLの場合：オレンジ */ -}}
-    {{- $main_bg = "#e0af68" -}}
-    {{- $os_icon = "" -}}
+    {{- $main_bg = "#e0af68" -}} {{- /* WSL: オレンジ */ -}}
+    {{- $os_label = "WSL" -}}
 {{- end -}}
 {{- /* ▲▲▲ ロジックここまで ▲▲▲ */ -}}
 
-# ▼ 左側のフォーマット
-# $os_icon をディレクトリの前に表示するように追加しました
+# ▼ フォーマット設定
+# $os_label (WIN/WSL) を先頭に太文字で表示します
 format = """
-[ $os_icon ](fg:#1a1b26 bg:{{ $main_bg }})\
+[ $os_label ](fg:#1a1b26 bg:{{ $main_bg }} bold)\
 $directory\
 [ ](fg:{{ $main_bg }} bg:#1d2230)\
 $git_branch\
 $git_status\
+$hostname\
 [ ](fg:#1d2230)\
 \n$character
 """
 
+# 右側の表示（お好みで）
 right_format = """
 $cmd_duration\
 $username\
-$hostname\
-$custom.sparkles\
 $time
 """
 
 add_newline = true
 
-# ▼ ホスト名設定を追加（右側に表示して念のため確認できるように）
+# ▼ ホスト名設定 (SSHのときだけ表示する設定)
 [hostname]
-ssh_only = false
-format = "[$hostname]($style) "
-style = "fg:#6272a4 dim"
+ssh_only = true  # SSH接続時のみホスト名を表示
+format = "[ $hostname ](fg:#e0af68 bg:#1d2230)"
 disabled = false
 
 [username]
@@ -54,20 +49,13 @@ disabled = false
 symbol = " "
 
 [directory]
-# ▼ ここを変数 {{ $main_bg }} に置き換えました
 style = "fg:#1a1b26 bg:{{ $main_bg }} bold"
 truncation_length = 10
 truncate_to_repo = false
 truncation_symbol = "…/"
-read_only = " 󰌾 "
+read_only = " LOCK " # ここもアイコンをやめて文字に
 read_only_style = "fg:#f7768e bg:#1a1b26"
 format = "[ $path ]($style)[$read_only]($read_only_style)"
-
-[directory.substitutions]
-"Documents" = "󰈙 "
-"Downloads" = " "
-"Music" = " "
-"Pictures" = " "
 
 [aws]
 disabled = true
@@ -75,7 +63,7 @@ disabled = true
 disabled = true
 
 [git_branch]
-symbol = ""
+symbol = "Git:" # アイコンをやめて文字に
 style = "bg:#1d2230"
 format = "[[ $symbol $branch ](fg:#769ff0 bg:#1d2230)]($style)"
 
@@ -91,10 +79,12 @@ format = "[$duration]($style)"
 [time]
 disabled = false
 time_format = "%R"
-format = "[[   $time ](fg:#a0a9cb)]($style)"
+format = "[[  TIME $time ](fg:#a0a9cb)]($style)"
 
 [character]
-vimcmd_symbol = "[V](bold green) "
+# 入力欄の矢印
+success_symbol = "[>](bold green)"
+error_symbol = "[>](bold red)"
 
 [custom.sparkles]
 command = "echo ✨"
