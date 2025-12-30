@@ -11,14 +11,14 @@
 {{- end -}}
 {{- /* ▲▲▲ ロジックここまで ▲▲▲ */ -}}
 
-# ▼ フォーマット設定
+# ▼▼▼ format ブロックをこれに書き換える ▼▼▼
 format = """
 [ $os_label ](fg:#1a1b26 bg:{{ $main_bg }} bold)\
 $directory\
 [ ](fg:{{ $main_bg }} bg:#1d2230)\
 $git_branch\
 $git_status\
-$custom.host_ip\
+${custom.host_ip}\
 [ ](fg:#1d2230)\
 \n$character
 """
@@ -100,8 +100,3 @@ format = "[[  TIME $time ](fg:#a0a9cb)]($style)"
 # 入力欄の矢印
 success_symbol = "[>](bold green)"
 error_symbol = "[>](bold red)"
-
-[custom.sparkles]
-command = "echo ✨"
-when = "true"
-format = "$output"
