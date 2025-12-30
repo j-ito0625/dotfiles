@@ -1,27 +1,25 @@
-{{- /* ▼▼▼ 設定ロジック ▼▼▼ */ -}}
-{{- $main_bg := "#bb9af7" -}}   {{- /* デフォルト(Linux): 紫 */ -}}
-{{- $os_label := "LINUX" -}}    {{- /* デフォルト文字 */ -}}
+{{- /* ▼▼▼ 設定ロジック（ここは維持） ▼▼▼ */ -}}
+{{- $main_bg := "#bb9af7" -}}
+{{- $os_label := "LINUX" -}}
 
 {{- if eq .chezmoi.os "windows" -}}
-    {{- $main_bg = "#769ff0" -}} {{- /* Windows: 青 */ -}}
+    {{- $main_bg = "#769ff0" -}}
     {{- $os_label = "WIN" -}}
 {{- else if or (contains "microsoft" .chezmoi.kernel.osrelease) (contains "wsl2" .chezmoi.kernel.osrelease) -}}
-    {{- $main_bg = "#e0af68" -}} {{- /* WSL: オレンジ */ -}}
+    {{- $main_bg = "#e0af68" -}}
     {{- $os_label = "WSL" -}}
 {{- end -}}
 {{- /* ▲▲▲ ロジックここまで ▲▲▲ */ -}}
 
-command_timeout = 2000
-
-# ▼▼▼ format ブロック ▼▼▼
-# 修正点: ${custom.host_ip} を $custom に変更しました
+# ▼▼▼ format設定 ▼▼▼
+# $custom を削除し、$hostname を追加しました
 format = """
 [ $os_label ](fg:#1a1b26 bg:{{ $main_bg }} bold)\
 $directory\
 [ ](fg:{{ $main_bg }} bg:#1d2230)\
 $git_branch\
 $git_status\
-$custom\
+$hostname\
 [ ](fg:#1d2230)\
 \n$character
 """
@@ -34,30 +32,16 @@ $time
 
 add_newline = true
 
-# ▼ ホスト名設定 (SSHのときだけ表示する設定)
+# ▼▼▼ ホスト名設定 (標準機能) ▼▼▼
 [hostname]
-disabled = true
-
-# ▼▼▼ カスタムコマンドで HOST : IP を表示 ▼▼▼
-[custom.host_ip]
-description = "Show Host : IP"
-
-
-{{ if eq .chezmoi.os "windows" }}
-# Windows: IP取得は動作が重くなるため、ホスト名のみ表示
-command = "hostname"
-{{ else if or (contains "microsoft" .chezmoi.kernel.osrelease) (contains "wsl2" .chezmoi.kernel.osrelease) }}
-# WSL: ホスト名をあえて 'WSL' と固定し、IPアドレスを表示
-command = "echo \"WSL : $(hostname -I | awk '{print $1}')\""
-{{ else }}
-# Linux(SSH先): 本当のホスト名 : IPアドレス を表示
-command = "echo \"$(hostname) : $(hostname -I | awk '{print $1}')\""
-{{ end }}
-
+# SSH以外(Windows/WSL)でも常にホスト名を表示する
+ssh_only = false
+# 色設定
 style = "fg:#e0af68 bg:#1d2230"
-format = "[ $output ]($style)"
-# ▲▲▲ カスタム設定ここまで ▲▲▲
+format = "[ $hostname ]($style)"
+disabled = false
 
+# ▼▼▼ その他設定 ▼▼▼
 [username]
 style_user = "white bold"
 style_root = "black bold"
@@ -72,17 +56,12 @@ style = "fg:#1a1b26 bg:{{ $main_bg }} bold"
 truncation_length = 10
 truncate_to_repo = false
 truncation_symbol = "…/"
-read_only = " LOCK " # ここもアイコンをやめて文字に
+read_only = " LOCK "
 read_only_style = "fg:#f7768e bg:#1a1b26"
 format = "[ $path ]($style)[$read_only]($read_only_style)"
 
-[aws]
-disabled = true
-[gcloud]
-disabled = true
-
 [git_branch]
-symbol = "Git:" # アイコンをやめて文字に
+symbol = "Git:"
 style = "bg:#1d2230"
 format = "[[ $symbol $branch ](fg:#769ff0 bg:#1d2230)]($style)"
 
@@ -101,6 +80,5 @@ time_format = "%R"
 format = "[[  TIME $time ](fg:#a0a9cb)]($style)"
 
 [character]
-# 入力欄の矢印
 success_symbol = "[>](bold green)"
 error_symbol = "[>](bold red)"
