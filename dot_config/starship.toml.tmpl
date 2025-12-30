@@ -1,0 +1,102 @@
+{{- /* ▼▼▼ 変数初期化（デフォルト：Linux/SSH - 紫） ▼▼▼ */ -}}
+{{- $main_bg := "#bb9af7" -}}
+{{- $os_icon := "" -}}
+
+{{- /* ▼▼▼ OS判定ロジック ▼▼▼ */ -}}
+{{- if eq .chezmoi.os "windows" -}}
+    {{- /* Windowsの場合：青 */ -}}
+    {{- $main_bg = "#769ff0" -}}
+    {{- $os_icon = "" -}}
+{{- /* 以下の行を修正：osrelease に microsoft または wsl2 が含まれていたら */ -}}
+{{- else if or (contains "microsoft" .chezmoi.kernel.osrelease) (contains "wsl2" .chezmoi.kernel.osrelease) -}}
+    {{- /* WSLの場合：オレンジ */ -}}
+    {{- $main_bg = "#e0af68" -}}
+    {{- $os_icon = "" -}}
+{{- end -}}
+{{- /* ▲▲▲ ロジックここまで ▲▲▲ */ -}}
+
+# ▼ 左側のフォーマット
+# $os_icon をディレクトリの前に表示するように追加しました
+format = """
+[ $os_icon ](fg:#1a1b26 bg:{{ $main_bg }})\
+$directory\
+[ ](fg:{{ $main_bg }} bg:#1d2230)\
+$git_branch\
+$git_status\
+[ ](fg:#1d2230)\
+\n$character
+"""
+
+right_format = """
+$cmd_duration\
+$username\
+$hostname\
+$custom.sparkles\
+$time
+"""
+
+add_newline = true
+
+# ▼ ホスト名設定を追加（右側に表示して念のため確認できるように）
+[hostname]
+ssh_only = false
+format = "[$hostname]($style) "
+style = "fg:#6272a4 dim"
+disabled = false
+
+[username]
+style_user = "white bold"
+style_root = "black bold"
+format = "user: [$user]($style) "
+disabled = false
+
+[fill]
+symbol = " "
+
+[directory]
+# ▼ ここを変数 {{ $main_bg }} に置き換えました
+style = "fg:#1a1b26 bg:{{ $main_bg }} bold"
+truncation_length = 10
+truncate_to_repo = false
+truncation_symbol = "…/"
+read_only = " 󰌾 "
+read_only_style = "fg:#f7768e bg:#1a1b26"
+format = "[ $path ]($style)[$read_only]($read_only_style)"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+
+[aws]
+disabled = true
+[gcloud]
+disabled = true
+
+[git_branch]
+symbol = ""
+style = "bg:#1d2230"
+format = "[[ $symbol $branch ](fg:#769ff0 bg:#1d2230)]($style)"
+
+[git_status]
+style = "bg:#1d2230"
+format = "[[($all_status$ahead_behind )](fg:#769ff0 bg:#1d2230)]($style)"
+
+[cmd_duration]
+min_time = 1
+style = "fg:#e0af68"
+format = "[$duration]($style)"
+
+[time]
+disabled = false
+time_format = "%R"
+format = "[[   $time ](fg:#a0a9cb)]($style)"
+
+[character]
+vimcmd_symbol = "[V](bold green) "
+
+[custom.sparkles]
+command = "echo ✨"
+when = "true"
+format = "$output"
