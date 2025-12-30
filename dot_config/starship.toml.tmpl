@@ -1,18 +1,24 @@
-{{- /* ▼▼▼ 設定ロジック（ここは維持） ▼▼▼ */ -}}
-{{- $main_bg := "#bb9af7" -}}
+{{- /* ▼▼▼ Configuration Logic ▼▼▼ */ -}}
+{{- /* Default settings (Linux/SSH) */ -}}
+{{- $main_bg := "#bb9af7" -}}   {{- /* Purple */ -}}
 {{- $os_label := "LINUX" -}}
+{{- $host_suffix := "" -}}      {{- /* No suffix for standard Linux */ -}}
 
+{{- /* Detect Windows */ -}}
 {{- if eq .chezmoi.os "windows" -}}
-    {{- $main_bg = "#769ff0" -}}
+    {{- $main_bg = "#769ff0" -}} {{- /* Blue */ -}}
     {{- $os_label = "WIN" -}}
-{{- else if or (contains "microsoft" .chezmoi.kernel.osrelease) (contains "wsl2" .chezmoi.kernel.osrelease) -}}
-    {{- $main_bg = "#e0af68" -}}
-    {{- $os_label = "WSL" -}}
-{{- end -}}
-{{- /* ▲▲▲ ロジックここまで ▲▲▲ */ -}}
+    {{- $host_suffix = " : WIN" -}} {{- /* Suffix for Windows */ -}}
 
-# ▼▼▼ format設定 ▼▼▼
-# $custom を削除し、$hostname を追加しました
+{{- /* Detect WSL */ -}}
+{{- else if or (contains "microsoft" .chezmoi.kernel.osrelease) (contains "wsl2" .chezmoi.kernel.osrelease) -}}
+    {{- $main_bg = "#e0af68" -}} {{- /* Orange */ -}}
+    {{- $os_label = "WSL" -}}
+    {{- $host_suffix = " : WSL2" -}} {{- /* Suffix for WSL */ -}}
+{{- end -}}
+{{- /* ▲▲▲ Logic End ▲▲▲ */ -}}
+
+# ▼▼▼ Format Section ▼▼▼
 format = """
 [ $os_label ](fg:#1a1b26 bg:{{ $main_bg }} bold)\
 $directory\
@@ -32,16 +38,15 @@ $time
 
 add_newline = true
 
-# ▼▼▼ ホスト名設定 (標準機能) ▼▼▼
+# ▼▼▼ Hostname Settings ▼▼▼
 [hostname]
-# SSH以外(Windows/WSL)でも常にホスト名を表示する
 ssh_only = false
-# 色設定
 style = "fg:#e0af68 bg:#1d2230"
-format = "[ $hostname ]($style)"
+# Inject the suffix ($host_suffix) defined in the template logic above
+format = "[ $hostname{{ $host_suffix }} ]($style)"
 disabled = false
 
-# ▼▼▼ その他設定 ▼▼▼
+# ▼▼▼ Other Settings ▼▼▼
 [username]
 style_user = "white bold"
 style_root = "black bold"
