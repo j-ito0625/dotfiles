@@ -12,19 +12,17 @@
 {{- /* ▲▲▲ ロジックここまで ▲▲▲ */ -}}
 
 # ▼ フォーマット設定
-# $os_label (WIN/WSL) を先頭に太文字で表示します
 format = """
 [ $os_label ](fg:#1a1b26 bg:{{ $main_bg }} bold)\
 $directory\
 [ ](fg:{{ $main_bg }} bg:#1d2230)\
 $git_branch\
 $git_status\
-$hostname\
+$custom.host_ip\
 [ ](fg:#1d2230)\
 \n$character
 """
 
-# 右側の表示（お好みで）
 right_format = """
 $cmd_duration\
 $username\
@@ -35,9 +33,26 @@ add_newline = true
 
 # ▼ ホスト名設定 (SSHのときだけ表示する設定)
 [hostname]
-ssh_only = true  # SSH接続時のみホスト名を表示
-format = "[ $hostname ](fg:#e0af68 bg:#1d2230)"
-disabled = false
+disabled = true
+
+# ▼▼▼ カスタムコマンドで HOST : IP を表示 ▼▼▼
+[custom.host_ip]
+description = "Show Host : IP"
+
+{{ if eq .chezmoi.os "windows" }}
+# Windows: IP取得は動作が重くなるため、ホスト名のみ表示
+command = "hostname"
+{{ else if or (contains "microsoft" .chezmoi.kernel.osrelease) (contains "wsl2" .chezmoi.kernel.osrelease) }}
+# WSL: ホスト名をあえて 'WSL' と固定し、IPアドレスを表示
+command = "echo \"WSL : $(hostname -I | awk '{print $1}')\""
+{{ else }}
+# Linux(SSH先): 本当のホスト名 : IPアドレス を表示
+command = "echo \"$(hostname) : $(hostname -I | awk '{print $1}')\""
+{{ end }}
+
+style = "fg:#e0af68 bg:#1d2230"
+format = "[ $output ]($style)"
+# ▲▲▲ カスタム設定ここまで ▲▲▲
 
 [username]
 style_user = "white bold"
