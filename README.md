@@ -29,7 +29,7 @@ sh -c "$(curl -fsLS get.chezmoi.io)"
 新しいマシンでのセットアップは以下のコマンド一発で完了します。
 
 ```bash
-chezmoi init --apply [https://github.com/](https://github.com/)<あなたのユーザー名>/dotfiles.git
+chezmoi init --apply https://github.com/j-ito0625/dotfiles.git
 
 ```
 
