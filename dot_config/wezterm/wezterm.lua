@@ -86,4 +86,6 @@ local keybinds = require("keybinds")
 config.keys = keybinds.keys
 config.key_tables = keybinds.key_tables
 
+config.mux_enable_ssh_agent = false
+
 return config
