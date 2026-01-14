@@ -18,7 +18,15 @@ config.use_ime = true
 config.window_background_opacity = 0.80
 config.macos_window_background_blur = 30
 config.window_decorations = "RESIZE"
-config.default_prog = { "pwsh.exe", "-NoLogo" }
+
+-- OS別のデフォルトシェル設定
+if wezterm.target_triple:find("windows") then
+  config.default_prog = { "pwsh.exe", "-NoLogo" }
+elseif wezterm.target_triple:find("linux") then
+  config.default_prog = { "/bin/bash" }
+elseif wezterm.target_triple:find("darwin") then
+  config.default_prog = { "/bin/zsh" }
+end
 
 config.window_frame = {
    inactive_titlebar_bg = "none",
