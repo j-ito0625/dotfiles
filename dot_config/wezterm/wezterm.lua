@@ -17,7 +17,7 @@ config.font_size = 12.0
 config.use_ime = true
 config.window_background_opacity = 0.80
 config.macos_window_background_blur = 30
-config.window_decorations = "RESIZE"
+config.window_decorations = "NONE"
 
 -- OS別のデフォルトシェル設定
 if wezterm.target_triple:find("windows") then
