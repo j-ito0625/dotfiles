@@ -1,6 +1,5 @@
 # dotfiles
-
-chezmoi で管理する個人設定。
+chezmoi で管理
 
 ## setup
 
@@ -28,8 +27,6 @@ chezmoi cd
 
 ## public policy
 
-公開 repo として扱う。秘密情報、履歴、cache、DB、cookie、machine id は置かない。
-
 管理しないもの:
 
 - `~/.ssh`, `~/.aws`
@@ -37,3 +34,6 @@ chezmoi cd
 - browser / Slack / Obsidian / VS Code profiles
 - Mozc `.db`, `.lock`, `.ipc`
 - shell history and logs
+
+## TODO
+- latex等の環境変数等いつか整理する．
