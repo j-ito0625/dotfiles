@@ -1,0 +1,11 @@
+# User-wide latexmk defaults.
+# Project latexmkrc files should choose the engine.
+
+$do_cd = 1;
+$max_repeat = 5;
+
+$ENV{TZ} = "Asia/Tokyo";
+$ENV{OPENTYPEFONTS} = "/usr/share/fonts//:" . ($ENV{OPENTYPEFONTS} || "");
+$ENV{TTFONTS} = "/usr/share/fonts//:" . ($ENV{TTFONTS} || "");
+
+$clean_ext = "synctex.gz fdb_latexmk fls run.xml bcf blg bbl aux log out toc nav snm vrb";

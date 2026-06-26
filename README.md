@@ -15,6 +15,7 @@ chezmoi init --apply https://github.com/j-ito0625/dotfiles.git
 - gh
 - btop / htop / neofetch
 - mozc
+- latexmk / texmf symlink
 
 ## usage
 
@@ -36,4 +37,4 @@ chezmoi cd
 - shell history and logs
 
 ## TODO
-- latex等の環境変数等いつか整理する．
+- shell の PATH と環境変数を整理する。
