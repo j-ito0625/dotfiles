@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -eu
+
+{{ if eq .chezmoi.os "linux" -}}
+if command -v gsettings >/dev/null 2>&1 \
+  && [ "$(gsettings writable org.gnome.desktop.wm.keybindings switch-input-source 2>/dev/null)" = true ] \
+  && [ "$(gsettings writable org.gnome.desktop.wm.keybindings switch-input-source-backward 2>/dev/null)" = true ]; then
+  gsettings set org.gnome.desktop.wm.keybindings switch-input-source "['<Alt>grave']"
+  gsettings set org.gnome.desktop.wm.keybindings switch-input-source-backward "['<Shift><Alt>grave']"
+fi
+{{ end -}}
